@@ -15,10 +15,10 @@ source("src/daseq.R")
 targets <- read.delim("data/RBP.txt", stringsAsFactors = F)$RBP 
 
 # Load surf results
-surf.results <- list(AQR = readRDS(paste0("data/AQR.results.rds")))
-# surf.results <- lapply(targets, function(target) 
-#   readRDS(paste0("data/",target,".results.rds")))
-# names(surf.results) = targets
+# surf.results <- list(AQR = readRDS(paste0("data/AQR.results.rds")))
+surf.results <- lapply(targets, function(target)
+  readRDS(paste0("data/",target,".results.rds")))
+names(surf.results) = targets
 
 ## gene_name
 gene_name = read.table("data/gene_name.txt", header = F, 
@@ -47,41 +47,51 @@ ui <- navbarPage(
         panel_div(
           class_type = "primary", 
           "How does it work?",
-          content = "SURF leverages large-scale CLIP-seq and RNA-seq data with and without RNA interference screening and infers rules of RBPs in alternative transcriptional regulation (ATR), including of AS, ATI, and APA. The multi-moduled SURF first extents the versatile differential exon usage analysis method DEXSeq for detection of differential ATR events and associates these events to local RNA-RBP interactions as measured by CLIP-seq. For an overview of the SURF framework, please go to the bottom of the Home page."
+          content = "SURF leverages large-scale CLIP-seq and RNA-seq data with and without RNA interference screening and infers rules of RBPs in alternative transcriptional regulation (ATR), including of AS, ATI, and APA. For an overview figure of the SURF framework, please go on the bottom of this Home page. The multi-moduled SURF first extents the versatile differential exon usage analysis method DEXSeq for detection of differential ATR events and associates these events to local RNA-RBP interactions as measured by CLIP-seq."
         )
       )
     ),
     fluidRow(
       column(
-        width = 3, 
+        width = 10, 
         panel_div(
-          class_type = "success", 
-          panel_title = "ATR Event",
-          content = "This app allows you to search ATR events relevant to specific RBP. You can search by gene names, ATR event types, etc."
-        )
-      ),
-      column(
-        width = 3, 
-        panel_div(
-          class_type = "success", 
-          panel_title = "Volcano Plot",
-          content = "Volcano plot provides you the first impression of what ATR event type an RBP is likely to regulate."
-        )
-      ),
-      column(
-        width = 4, 
-        panel_div(
-          class_type = "success", 
-          "FA Plot",
-          content = "Functional association plot presents by a positional specific manner how an RBP is affecting the targeted AS, ATI, and APA events."
+          class_type = "primary", 
+          panel_title = "What does it do?",
+          content = fluidRow(
+            column(
+              width = 4, 
+              panel_div(
+                class_type = "success", 
+                panel_title = "ATR Event",
+                content = "This app allows you to search ATR events relevant to specific RBP. You can search by gene names, ATR event types, etc."
+              )
+            ),
+            column(
+              width = 4, 
+              panel_div(
+                class_type = "success", 
+                panel_title = "Volcano Plot",
+                content = "Volcano plot provides you the global view of what ATR event type an RBP is likely to regulate."
+              )
+            ),
+            column(
+              width = 4, 
+              panel_div(
+                class_type = "success", 
+                "FA Plot",
+                content = "Functional association plot presents how an RBP regulates some types of AS, ATI, and APA events, though specific genomic regions."
+              )
+            )
+          )
         )
       )
+      
     ),  # end of fluidRow
     fluidRow(
       column(
         width = 5, 
         panel_div(
-          class_type = "info", 
+          class_type = "primary", 
           "Citation",
           HTML("Fan Chen and Sunduz Keles. “SURF: Integrative analysis of a compendium of RNA-seq and eCLIP-seq datasets highlights complex governing of alternative transcriptional regulation by RNA-binding proteins.” ")
         )
@@ -89,7 +99,7 @@ ui <- navbarPage(
       column(
         width = 3, 
         panel_div(
-          class_type = "warning", 
+          class_type = "primary", 
           "Contact and License",
           HTML("Email us: <a href='mailto:fan.chen@wisc.edu'>Fan Chen</a>, <a href='mailto:keles@stat.wisc.edu'>Sunduz Keles</a><br><br>Copyright (c) 2019 Fan Chen, Sunduz Keles")
         )

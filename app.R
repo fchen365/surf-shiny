@@ -1,5 +1,7 @@
 # Load packages
 library(shiny)
+library(shinyBS)
+library(shinyLP)
 library(shinythemes)
 options(repos = BiocManager::repositories())
 
@@ -13,10 +15,10 @@ source("src/daseq.R")
 targets <- read.delim("data/RBP.txt", stringsAsFactors = F)$RBP 
 
 # Load surf results
-# surf.results <- list(AQR = readRDS(paste0("data/AQR.results.rds")))
-surf.results <- lapply(targets, function(target) 
-  readRDS(paste0("data/",target,".results.rds")))
-names(surf.results) = targets
+surf.results <- list(AQR = readRDS(paste0("data/AQR.results.rds")))
+# surf.results <- lapply(targets, function(target) 
+#   readRDS(paste0("data/",target,".results.rds")))
+# names(surf.results) = targets
 
 ## gene_name
 gene_name = read.table("data/gene_name.txt", header = F, 
@@ -28,26 +30,97 @@ ui <- navbarPage(
   "SURF", 
   theme = shinytheme("flatly"),
   tabPanel(
-    "About",
-    fluidPage(
-      titlePanel("Statistical Utility for RBP Functions (SURF)"),
-      sidebarLayout(
-        # Sidebar with a slider input
-        sidebarPanel(
-          textOutput(outputId = "citation")
-        ),
-        
-        # Show a plot of the generated distribution
-        mainPanel(
-          textOutput(outputId = "abstract"),
-          textOutput(outputId = "pipeline.desc"),
-          imageOutput("pipeline")
+    "Home", icon = icon("home"),
+    jumbotron(
+      "Welcome to SURF!", 
+      "The Statistical Utility for RBP Functions (SURF) is an integrative analysis framework to identify alternative splicing (AS), alternative transcription initiation (ATI), and alternative polyadenylation (APA) events regulated by individual RBPs and elucidate RNA-RBP interactions governing these events. This shiny app presents SURF results on 104 RBPs available from the ENCODE consortium.",
+      button = FALSE),
+    fluidRow(
+      column(
+        width = 6, 
+        panel_div(
+          class_type = "primary", 
+          panel_title = "Background",
+          content = "Post-transcriptional regulation by RNA binding proteins (RBPs) is a major contributor to protein diversity in mammalian genomes. RBPs interact with pre-mature messenger RNA transcripts and orchestrate formation of mature RNA transcripts through regulation of alternative splicing events such as exon skipping, 3’ or 5’ splicing, intron retention, alternative transcription initiation, and alternative polyadenylation. Recent advances in ultraviolet cross-linking immunoprecipitation followed by high throughput sequencing (CLIP-seq) resulted in large collections of RBP binding data coupled with transcriptome profiling by RNA-seq across multiple conditions (e.g. ENCODE).")),
+      column(
+        width = 5, 
+        panel_div(
+          class_type = "primary", 
+          "How does it work?",
+          content = "SURF leverages large-scale CLIP-seq and RNA-seq data with and without RNA interference screening and infers rules of RBPs in alternative transcriptional regulation (ATR), including of AS, ATI, and APA. The multi-moduled SURF first extents the versatile differential exon usage analysis method DEXSeq for detection of differential ATR events and associates these events to local RNA-RBP interactions as measured by CLIP-seq. For an overview of the SURF framework, please go to the bottom of the Home page."
         )
       )
+    ),
+    fluidRow(
+      column(
+        width = 3, 
+        panel_div(
+          class_type = "success", 
+          panel_title = "ATR Event",
+          content = "This app allows you to search ATR events relevant to specific RBP. You can search by gene names, ATR event types, etc."
+        )
+      ),
+      column(
+        width = 3, 
+        panel_div(
+          class_type = "success", 
+          panel_title = "Volcano Plot",
+          content = "Volcano plot provides you the first impression of what ATR event type an RBP is likely to regulate."
+        )
+      ),
+      column(
+        width = 4, 
+        panel_div(
+          class_type = "success", 
+          "FA Plot",
+          content = "Functional association plot presents by a positional specific manner how an RBP is affecting the targeted AS, ATI, and APA events."
+        )
+      )
+    ),  # end of fluidRow
+    fluidRow(
+      column(
+        width = 5, 
+        panel_div(
+          class_type = "info", 
+          "Citation",
+          HTML("Fan Chen and Sunduz Keles. “SURF: Integrative analysis of a compendium of RNA-seq and eCLIP-seq datasets highlights complex governing of alternative transcriptional regulation by RNA-binding proteins.” ")
+        )
+      ),
+      column(
+        width = 3, 
+        panel_div(
+          class_type = "warning", 
+          "Contact and License",
+          HTML("Email us: <a href='mailto:fan.chen@wisc.edu'>Fan Chen</a>, <a href='mailto:keles@stat.wisc.edu'>Sunduz Keles</a><br><br>Copyright (c) 2019 Fan Chen, Sunduz Keles")
+        )
+      )
+    ),
+    fluidRow(
+      column(
+        width = 10, 
+        textOutput(outputId = "pipeline.desc"),
+        imageOutput("pipeline")
+      )
     )
+    # fluidPage(
+    #   titlePanel("Statistical Utility for RBP Functions (SURF)"),
+    #   sidebarLayout(
+    #     # Sidebar with a slider input
+    #     sidebarPanel(
+    #       textOutput(outputId = "citation")
+    #     ),
+    # 
+    #     # Show a plot of the generated distribution
+    #     mainPanel(
+    #       textOutput(outputId = "abstract"),
+    #       textOutput(outputId = "pipeline.desc"),
+    #       imageOutput("pipeline")
+    #     )
+    #   )
+    # )
   ),
   tabPanel(
-    "ATR Event",
+    "ATR Event", icon = icon("search"),
     fluidPage(
       titlePanel("Differential ATR Event"),
       sidebarLayout(
@@ -82,7 +155,7 @@ ui <- navbarPage(
     )
   ),
   tabPanel(
-    "Volcano Plot", 
+    "Volcano Plot", icon = icon("chart-area"),
     fluidPage(
       titlePanel("Volcano Plot"),
       sidebarLayout(
@@ -109,7 +182,7 @@ ui <- navbarPage(
     )
   ),
   tabPanel(
-    "FA Plot", 
+    "FA Plot", icon = icon("chart-line"),
     fluidPage(
       titlePanel("Functional Association (FA) Plot"),
       sidebarLayout(
@@ -134,12 +207,21 @@ ui <- navbarPage(
                       min = 0, max = 0.5, value = 0.025),
           
           sliderInput("fa.fdr.cutoff", "Significance level:", 
-                      min = 0, max = 0.2, value = 0.05),
+                      min = 0, max = 0.2, value = 0.05)
         ),
         # Output: Description, lineplot, and reference
         mainPanel(
           plotOutput(outputId = "fa.plot", height = "400px"), 
-          textOutput(outputId = "fa.desc")
+          textOutput(outputId = "fa.desc"),
+          textOutput(outputId = "feature.desc"),
+          imageOutput("feature_SE", height = "auto"),
+          imageOutput("feature_RI", height = "auto"),
+          imageOutput("feature_A3SS", height = "auto"),
+          imageOutput("feature_A5SS", height = "auto"),
+          imageOutput("feature_AFE", height = "auto"),
+          imageOutput("feature_A5U", height = "auto"),
+          imageOutput("feature_IAP", height = "auto"),
+          imageOutput("feature_TAP", height = "auto"),
         )
       )
     )
@@ -189,6 +271,52 @@ server <- function(input, output, session) {
   })
   
   # FA plot
+  output$feature.desc <- renderText({
+    paste0("The location features for ", 
+           paste(input$fa.plot.event, collapse = ", "), 
+           " are illustrated below.")
+  })
+  output$feature_SE <- renderImage({
+    if ("SE" %in% input$fa.plot.event)
+    list(src = ifelse("SE" %in% input$fa.plot.event, 
+                      "figure/feature_SE.png", ""),
+         width = session$clientData$output_feature_SE_width * .6)
+  }, deleteFile = F)
+  output$feature_RI <- renderImage({
+    list(src = ifelse("RI" %in% input$fa.plot.event, 
+                      "figure/feature_RI.png", ""),
+         width = session$clientData$output_feature_RI_width * .6)
+  }, deleteFile = F)
+  output$feature_A3SS <- renderImage({
+    list(src = ifelse("A3SS" %in% input$fa.plot.event, 
+                      "figure/feature_A3SS.png", ""),
+         width = session$clientData$output_feature_A3SS_width * .6)
+  }, deleteFile = F)
+  output$feature_A5SS <- renderImage({
+    list(src = ifelse("A5SS" %in% input$fa.plot.event, 
+                      "figure/feature_A5SS.png", ""),
+         width = session$clientData$output_feature_A5SS_width * .6)
+  }, deleteFile = F)
+  output$feature_AFE <- renderImage({
+    list(src = ifelse("AFE" %in% input$fa.plot.event, 
+                      "figure/feature_AFE.png", ""),
+         width = session$clientData$output_feature_AFE_width * .6)
+  }, deleteFile = F)
+  output$feature_A5U <- renderImage({
+    list(src = ifelse("A5U" %in% input$fa.plot.event, 
+                      "figure/feature_A5U.png", ""),
+         width = session$clientData$output_feature_A5U_width * .6)
+  }, deleteFile = F)
+  output$feature_IAP <- renderImage({
+    list(src = ifelse("IAP" %in% input$fa.plot.event, 
+                      "figure/feature_IAP.png", ""),
+         width = session$clientData$output_feature_IAP_width * .6)
+  }, deleteFile = F)
+  output$feature_TAP <- renderImage({
+    list(src = ifelse("TAP" %in% input$fa.plot.event, 
+                      "figure/feature_TAP.png", ""),
+         width = session$clientData$output_feature_TAP_width * .6)
+  }, deleteFile = F)
   output$fa.plot <- renderPlot({
     fa.plot(surf.results[[input$fa.factor]], 
             plot.event = input$fa.plot.event, 

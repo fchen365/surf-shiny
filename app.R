@@ -47,7 +47,7 @@ ui <- navbarPage(
         panel_div(
           class_type = "primary", 
           "How does it work?",
-          content = "SURF leverages large-scale CLIP-seq and RNA-seq data with and without RNA interference screening and infers rules of RBPs in alternative transcriptional regulation (ATR), including of AS, ATI, and APA. For an overview figure of the SURF framework, please go on the bottom of this Home page. The multi-moduled SURF first extents the versatile differential exon usage analysis method DEXSeq for detection of differential ATR events and associates these events to local RNA-RBP interactions as measured by CLIP-seq."
+          content = "SURF leverages large-scale CLIP-seq and RNA-seq data with and without RNA interference screening and infers rules of RBPs in alternative transcriptional regulation (ATR), including AS, ATI, and APA. For an overview figure of the SURF framework, please go on the bottom of this Home page. The multi-moduled SURF first extents the versatile differential exon usage analysis method DEXSeq for detection of differential ATR events and associates these events to local RNA-RBP interactions as measured by CLIP-seq."
         )
       )
     ),
@@ -63,7 +63,7 @@ ui <- navbarPage(
               panel_div(
                 class_type = "success", 
                 panel_title = "ATR Event",
-                content = "This app allows you to search ATR events relevant to specific RBP. You can search by gene names, ATR event types, etc."
+                content = "This app allows you to search ATR events relevant to a specific RBP. You can search by gene names, ATR event types, etc."
               )
             ),
             column(
@@ -71,7 +71,7 @@ ui <- navbarPage(
               panel_div(
                 class_type = "success", 
                 panel_title = "Volcano Plot",
-                content = "Volcano plot provides you the global view of what ATR event type an RBP is likely to regulate."
+                content = "Volcano plot provides you the global view of what ATR event types an RBP is likely to regulate."
               )
             ),
             column(
@@ -79,7 +79,7 @@ ui <- navbarPage(
               panel_div(
                 class_type = "success", 
                 "FA Plot",
-                content = "Functional association plot presents how an RBP regulates some types of AS, ATI, and APA events, though specific genomic regions."
+                content = "Functional association plot depicts the potential genomic location where RBP-RNA interaction takes place in ATR events."
               )
             )
           )

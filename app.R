@@ -16,9 +16,9 @@ targets <- read.delim("data/RBP.txt", stringsAsFactors = F)$RBP
 
 # Load surf results
 # surf.results <- list(AQR = readRDS(paste0("data/AQR.results.rds")))
-surf.results <- lapply(targets, function(target)
-  readRDS(paste0("data/",target,".results.rds")))
-names(surf.results) = targets
+# surf.results <- lapply(targets, function(target)
+#   readRDS(paste0("data/",target,".results.rds")))
+# names(surf.results) = targets
 
 ## gene_name
 gene_name = read.table("data/gene_name.txt", header = F, 
@@ -254,7 +254,9 @@ server <- function(input, output, session) {
   
   ## diff ATR event 
   output$surfData <- DT::renderDataTable({
-    sdat <- surf.results[[input$atr.factor]]@trainData
+    
+    # sdat <- surf.results[[input$atr.factor]]@trainData
+    sdat <- readRDS(paste0("data/",input$atr.factor,".results.rds"))@trainData
     sdat <- sdat[sdat$event_name %in% input$atr.event &
                    sdat$group %in% input$atr.group &
                    sdat$padj < input$atr.fdr.cutoff, ]
@@ -272,7 +274,7 @@ server <- function(input, output, session) {
   
   ## volcano
   output$volcano.plot <- renderPlot({
-    volcano.plot(surf.results[[input$volcano.factor]]@trainData, 
+    volcano.plot(readRDS(paste0("data/",input$volcano.factor,".results.rds"))@trainData, 
                  lfc.cutoff = c(-1,1) * input$volcano.lfc.cutoff, 
                  fdr.cutoff = input$volcano.fdr.cutoff)
   })
@@ -281,6 +283,19 @@ server <- function(input, output, session) {
   })
   
   # FA plot
+  output$fa.plot <- renderPlot({
+    fa.plot(readRDS(paste0("data/",input$fa.factor,".results.rds")), 
+            plot.event = input$fa.plot.event, 
+            trim = input$fa.trim, 
+            fdr.cutoff = input$fa.fdr.cutoff)
+  })
+  output$fa.desc <- renderText({
+    paste0("Functional association (FA) plot for ", input$fa.factor, " in ", 
+           paste(input$fa.plot.event, collapse = ", "), ". ", 
+           "The upper panel plots the feature signals for three differential ATR groups.", 
+           "The lower panel depicts the -log10 transformed p-values for each association testing after multiplicity correction.",
+           "The dashed lines indicate the significance level (of FDR).")
+  })
   output$feature.desc <- renderText({
     paste0("The location features for ", 
            paste(input$fa.plot.event, collapse = ", "), 
@@ -327,19 +342,6 @@ server <- function(input, output, session) {
                       "figure/feature_TAP.png", ""),
          width = session$clientData$output_feature_TAP_width * .6)
   }, deleteFile = F)
-  output$fa.plot <- renderPlot({
-    fa.plot(surf.results[[input$fa.factor]], 
-            plot.event = input$fa.plot.event, 
-            trim = input$fa.trim, 
-            fdr.cutoff = input$fa.fdr.cutoff)
-  })
-  output$fa.desc <- renderText({
-    paste0("Functional association (FA) plot for ", input$fa.factor, " in ", 
-           paste(input$fa.plot.event, collapse = ", "), ". ", 
-           "The upper panel plots the feature signals for three differential ATR groups.", 
-           "The lower panel depicts the -log10 transformed p-values for each association testing after multiplicity correction.",
-           "The dashed lines indicate the significance level (of FDR).")
-  })
 }
 
 # Create Shiny object

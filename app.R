@@ -112,22 +112,6 @@ ui <- navbarPage(
         imageOutput("pipeline")
       )
     )
-    # fluidPage(
-    #   titlePanel("Statistical Utility for RBP Functions (SURF)"),
-    #   sidebarLayout(
-    #     # Sidebar with a slider input
-    #     sidebarPanel(
-    #       textOutput(outputId = "citation")
-    #     ),
-    # 
-    #     # Show a plot of the generated distribution
-    #     mainPanel(
-    #       textOutput(outputId = "abstract"),
-    #       textOutput(outputId = "pipeline.desc"),
-    #       imageOutput("pipeline")
-    #     )
-    #   )
-    # )
   ),
   tabPanel(
     "ATR Event", icon = icon("search"),
@@ -186,7 +170,8 @@ ui <- navbarPage(
         # Output: Description, lineplot, and reference
         mainPanel(
           plotOutput(outputId = "volcano.plot", height = "400px"),
-          textOutput(outputId = "volcano.desc")
+          textOutput(outputId = "volcano.desc"),
+          imageOutput("events")
         )
       )
     )
@@ -279,8 +264,17 @@ server <- function(input, output, session) {
                  fdr.cutoff = input$volcano.fdr.cutoff)
   })
   output$volcano.desc <- renderText({
-    paste0("Volcano plot (-log10 transformed adjusted p-value versus log2 of fold change) of DrSeq results for ", input$volcano.factor, " shRNA-seq dataset (ENCODE), stratified by ATR event types.")
+    paste0("Volcano plot (-log10 transformed adjusted p-value versus log2 of fold change) of DrSeq results for ", 
+    input$volcano.factor, 
+    " shRNA-seq dataset (ENCODE), stratified by ATR event types. 
+    For eight ATR event types, please refer to the figure below.")
   })
+  output$events <- renderImage({
+    width <- session$clientData$output_pipeline_width * .7
+    list(src = "figure/atr_events.png",
+         width = min(600, width),
+         alt = "Illustration of eight ATR event types.")
+  }, deleteFile = F)
   
   # FA plot
   output$fa.plot <- renderPlot({

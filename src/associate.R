@@ -475,17 +475,19 @@ fa.plot <- function(sres, plot.event = "all",
           axis.ticks.x = element_blank())
   
   ## dot-line plot: adjusted p-values
-  dat2 <- dat1 %>% 
-    group_by(event, feature) %>% 
-    summarise(n = n()) %>%
-    left_join(as.data.frame(sres), by = c("event", "feature")) %>% 
-    ungroup() %>%
-    mutate(event = factor(event, surf.events),
-           logp = - log10(padj), 
-           x = factor(feature, surf.features), 
-           functional = ifelse(is.na(logp), "not tested", as.character(functional)) %>%
-             factor(c("exclusion", "inclusion", "not tested")), 
-           logp = ifelse(is.na(logp), 0, logp)) 
+  suppressWarnings({
+    dat2 <- dat1 %>% 
+      group_by(event, feature) %>% 
+      summarise(n = n()) %>%
+      left_join(as.data.frame(sres), by = c("event", "feature")) %>% 
+      ungroup() %>%
+      mutate(event = factor(event, surf.events),
+             logp = - log10(padj), 
+             x = factor(feature, surf.features), 
+             functional = ifelse(is.na(logp), "not tested", as.character(functional)) %>%
+               factor(c("exclusion", "inclusion", "not tested")), 
+             logp = ifelse(is.na(logp), 0, logp)) 
+  })
   g2 <- ggplot(dat2, aes(x, logp, color = functional)) +
     geom_hline(yintercept = -log10(fdr.cutoff), color = "grey40", alpha = .9, linetype = 2, show.legend = T) + 
     geom_point(alpha = .9) +

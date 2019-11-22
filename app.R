@@ -286,9 +286,11 @@ server <- function(input, output, session) {
   output$fa.desc <- renderText({
     paste0("Functional association (FA) plot for ", input$fa.factor, " in ", 
            paste(input$fa.plot.event, collapse = ", "), ". ", 
-           "The upper panel plots the feature signals for three differential ATR groups.", 
-           "The lower panel depicts the -log10 transformed p-values for each association testing after multiplicity correction.",
-           "The dashed lines indicate the significance level (of FDR).")
+           "The upper panel plots the feature signals for three differential ATR groups. ", 
+           "The lower panel depicts the -log10 transformed p-values for each association testing after multiplicity correction. ",
+           "The dashed lines indicate the significance level (of FDR). ", 
+           "For each event type (top strips), the size of three differential ATR groups -- decrease, no change, and increase -- are listed in order. ",
+           "Only the differential group (increase, decrease) of size greater than 100 are tested; the others are not tested. ")
   })
   output$feature.desc <- renderText({
     paste0("The location features for ", 

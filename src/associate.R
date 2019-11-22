@@ -445,6 +445,8 @@ fa.plot <- function(sres, plot.event = "all",
   
   ## box plot: feature signals
   trainData <- sres@trainData
+  groupSize <- table(trainData$event_name, trainData$group) %>% 
+    apply(1, paste, collapse = ", ")
   trainData <- trainData[trainData$event_name %in% plot.event,]
   featureSignal <- trainData$featureSignal
   dat1 = data.frame(
@@ -457,33 +459,47 @@ fa.plot <- function(sres, plot.event = "all",
            upper = quantile(signal, 1 - trim * 2),
            x = factor(feature, surf.features)) %>% 
     dplyr::filter(signal > lower, signal < upper) %>% 
-    ungroup
+    ungroup %>% 
+    mutate(strip = paste0(event, " (", groupSize[event], ")") %>% 
+             factor(paste0(names(groupSize), " (", groupSize, ")")))
   g1 <- ggplot(dat1, aes(x, signal, fill = group)) +
     geom_boxplot(color = "grey30", alpha = .9, 
                  outlier.shape = ".", outlier.color = "grey80") + 
-    labs(x = "", y = "feature signal") + 
+    labs(y = "feature signal") + 
     scale_fill_manual(values = c("increase" = "#4d9221", "no change" = "grey50","decrease" = "#c51b7d")) + 
     scale_x_discrete(breaks = surf.features, labels = greek.features) +
-    facet_grid(cols = vars(event), scales = "free_x", space = "free_x") + 
-    theme_bw() 
+    facet_grid(cols = vars(strip), scales = "free_x", space = "free_x") + 
+    theme_bw() + 
+    theme(axis.title.x = element_blank(), 
+          axis.text.x = element_blank(), 
+          axis.ticks.x = element_blank())
   
   ## dot-line plot: adjusted p-values
-  dat2 <- as.data.frame(sres) %>% 
-    dplyr::filter(event %in% plot.event) %>%
+  dat2 <- dat1 %>% 
+    group_by(event, feature) %>% 
+    summarise(n = n()) %>%
+    left_join(as.data.frame(sres), by = c("event", "feature")) %>% 
+    ungroup() %>%
     mutate(event = factor(event, surf.events),
            logp = - log10(padj), 
-           x = factor(feature, surf.features)) 
+           x = factor(feature, surf.features), 
+           functional = ifelse(is.na(logp), "not tested", as.character(functional)) %>%
+             factor(c("exclusion", "inclusion", "not tested")), 
+           logp = ifelse(is.na(logp), 0, logp)) 
   g2 <- ggplot(dat2, aes(x, logp, color = functional)) +
-    geom_hline(yintercept = -log10(fdr.cutoff), color = "grey40", alpha = .9, linetype = 2) + 
+    geom_hline(yintercept = -log10(fdr.cutoff), color = "grey40", alpha = .9, linetype = 2, show.legend = T) + 
     geom_point(alpha = .9) +
     stat_summary(aes(group = functional), fun.y = sum, geom = "line", alpha = .8) +
-    labs(x = "location feature", y = "log"[10]~"(adjusted p value)") +
-    scale_color_manual(values = c(exclusion = "#4d9221", inclusion = "#c51b7d")) + 
+    labs(x = "location feature", y = "-log"[10]~"(adjusted p value)") +
+    scale_color_manual(values = c(exclusion = "#4d9221", inclusion = "#c51b7d", "not tested" = "grey40")) + 
     scale_x_discrete(breaks = surf.features, labels = greek.features) +
     facet_grid(cols = vars(event), scales = "free_x", space = "free_x") + 
-    theme_bw() 
+    theme_bw() + 
+    theme(strip.background = element_blank(), 
+          strip.text = element_blank())
   
   g <- ggpubr::ggarrange(g1, g2, ncol = 1, align = "v")
+  # ggsave("faplot.pdf", g, width = 8, height = 5)
   return(g)
 }
 

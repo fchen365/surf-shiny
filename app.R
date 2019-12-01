@@ -33,7 +33,7 @@ ui <- navbarPage(
     "Home", icon = icon("home"),
     jumbotron(
       "Welcome to SURF!", 
-      "The Statistical Utility for RBP Functions (SURF) is an integrative analysis framework to identify alternative splicing (AS), alternative transcription initiation (ATI), and alternative polyadenylation (APA) events regulated by individual RBPs and elucidate RNA-RBP interactions governing these events. This shiny app presents SURF results on 104 RBPs available from the ENCODE consortium.",
+      "The Statistical Utility for RBP Functions (SURF) is an integrative analysis framework to identify alternative splicing (AS), alternative transcription initiation (ATI), and alternative polyadenylation (APA) events regulated by individual RBPs and elucidate RNA-RBP interactions governing these events. This shiny app presents SURF results on 104 RBPs (K562 cells) available from the ENCODE consortium.",
       button = FALSE),
     fluidRow(
       column(

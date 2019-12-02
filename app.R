@@ -33,7 +33,7 @@ ui <- navbarPage(
     "Home", icon = icon("home"),
     jumbotron(
       "Welcome to SURF!", 
-      "The Statistical Utility for RBP Functions (SURF) is an integrative analysis framework to identify alternative splicing (AS), alternative transcription initiation (ATI), and alternative polyadenylation (APA) events regulated by individual RBPs and elucidate RNA-RBP interactions governing these events. This shiny app presents SURF results on 104 RBPs (K562 cells) available from the ENCODE consortium.",
+      "The Statistical Utility for RBP Functions (SURF) is an integrative analysis framework to identify alternative splicing (AS), alternative transcription initiation (ATI), and alternative polyadenylation (APA) events regulated by individual RBPs and elucidate protein-RNA interactions governing these events. This shiny app presents SURF results on 104 RBPs (K562 cells) available from the ENCODE consortium.",
       button = FALSE),
     fluidRow(
       column(
@@ -47,7 +47,7 @@ ui <- navbarPage(
         panel_div(
           class_type = "primary", 
           "How does it work?",
-          content = "SURF leverages large-scale CLIP-seq and RNA-seq data with and without RNA interference screening and infers rules of RBPs in alternative transcriptional regulation (ATR), including AS, ATI, and APA. For an overview figure of the SURF framework, please go on the bottom of this Home page. The multi-moduled SURF first extents the versatile differential exon usage analysis method DEXSeq for detection of differential ATR events and associates these events to local RNA-RBP interactions as measured by CLIP-seq."
+          content = "SURF leverages large-scale CLIP-seq and RNA-seq data with and without RNA interference screening and infers rules of RBPs in alternative transcriptional regulation (ATR), including AS, ATI, and APA. For an overview figure of the SURF framework, please go on the bottom of this Home page. The multi-moduled SURF first extents the versatile differential exon usage analysis method DEXSeq for detection of differential ATR events and associates these events to local protein-RNA interactions as measured by CLIP-seq."
         )
       )
     ),
@@ -227,7 +227,6 @@ ui <- navbarPage(
 server <- function(input, output, session) {
   
   output$citation <- renderText("Fan Chen and Sunduz Keles. \n\"SURF: Integrative analysis of a compendium of RNA-seq and eCLIP-seq datasets highlights complex governing of alternative transcriptional regulation by RNA-binding proteins.\"")
-  output$abstract <- renderText("Post-transcriptional regulation by RNA binding proteins (RBPs) is a major contributor to protein diversity in mammalian genomes. RBPs interact with pre-mature messenger RNA transcripts and orchestrate formation of mature RNA transcripts through regulation of alternative splicing events such as exon skipping, 3’ or 5’ splicing, intron retention, alternative transcription initiation, and alternative polyadenylation. Recent advances in ultraviolet cross-linking immunoprecipitation followed by high throughput sequencing (CLIP-seq) resulted in large collections of RBP binding data coupled with transcriptome profiling by RNA-seq across multiple conditions. We leveraged such a large collection of CLIP-seq and RNA-seq data with and without RNA interference screening from the ENCODE consortium and developed SURF, Statistical Utility for RBP Functions. SURF is an integrative analysis framework to identify alternative splicing (AS), alternative transcription initiation (ATI), and alternative polyadenylation (APA) events regulated by individual RBPs and elucidate RNA-RBP interactions governing these events. The multi-moduled SURF first extents the versatile differential exon usage analysis method DEXSeq for detection of differential alternative transcriptional regulation (ATR) of AS, ATI, and APA events and associates these events to local RNA-RBP interactions as measured by CLIP-seq. Large-scale application of SURF recovered known roles of a handful of RBPs while generating novel hypotheses for the others under a well-calibrated false discovery rate. Downstream analysis of RBP-RNA interaction regions in SURF-identified associations exhibited significant enrichment of somatic mutations in both the TCGA and ICGC datasets. Furthermore, a systematic comparison of SURF-identified transcript targets of RBPs across GTEx and TCGA compendia highlighted specific AS, ATI, and APA regulation roles for RBPs in adult acute myeloid leukemia.")
   output$pipeline.desc <- renderText("Here is an overview of SURF pipeline.")
   output$pipeline <- renderImage({
     width <- session$clientData$output_pipeline_width * .89

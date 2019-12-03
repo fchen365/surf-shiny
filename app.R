@@ -79,7 +79,7 @@ ui <- navbarPage(
               panel_div(
                 class_type = "success", 
                 "FA Plot",
-                content = "Functional association plot depicts the potential genomic location where RBP-RNA interaction takes place in ATR events."
+                content = "Functional association plot depicts the potential genomic location where protein-RNA interaction takes place in ATR events."
               )
             )
           )

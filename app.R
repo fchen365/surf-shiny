@@ -101,7 +101,7 @@ ui <- navbarPage(
         panel_div(
           class_type = "primary", 
           "Contact and License",
-          HTML("Email us: <a href='mailto:fan.chen@wisc.edu'>Fan Chen</a>, <a href='mailto:keles@stat.wisc.edu'>Sunduz Keles</a><br><br>Copyright (c) 2019 Fan Chen, Sunduz Keles")
+          HTML("Email us: <a href='mailto:fan.chen@wisc.edu'>Fan Chen</a>, <a href='mailto:keles@stat.wisc.edu'>Sunduz Keles</a><br><br>Copyright (c) Fan Chen and Sunduz Keles")
         )
       )
     ),

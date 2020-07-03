@@ -236,7 +236,7 @@ server <- function(input, output, session) {
   }, deleteFile = F)
   
   
-  ## diff ATR event 
+  ## diff ATR event ----
   output$surfData <- DT::renderDataTable({
     
     # sdat <- surf.results[[input$atr.factor]]@trainData
@@ -256,7 +256,7 @@ server <- function(input, output, session) {
       DT::datatable(options = list(lengthMenu = c(50, 30, 50), pageLength = 50))
   })
   
-  ## volcano
+  ## volcano ---- 
   output$volcano.plot <- renderPlot({
     volcano.plot(readRDS(paste0("data/",input$volcano.factor,".results.rds"))@trainData, 
                  lfc.cutoff = c(-1,1) * input$volcano.lfc.cutoff, 
@@ -275,7 +275,7 @@ server <- function(input, output, session) {
          alt = "Illustration of eight ATR event types.")
   }, deleteFile = F)
   
-  # FA plot
+  # FA plot ---- 
   output$fa.plot <- renderPlot({
     fa.plot(readRDS(paste0("data/",input$fa.factor,".results.rds")), 
             plot.event = input$fa.plot.event, 
